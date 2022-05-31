@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Apache On The Cloud Jobs Monitor</h1>
+<h1> EENVEST Financial Calculation Results</h1>
 
 <table id="OutputEntryTable" class="table table-striped">
     <button onclick="reset();">
@@ -96,6 +96,7 @@
    var interval = setInterval(refresh, 2000);
 
 function reset(){
+     document.getElementById("json").textContent = "";
     var requestOptions = {
   method: 'GET',
   redirect: 'follow'
