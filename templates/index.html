@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Apache On The Cloud Jobs Monitor</h1>
+
+<table id="OutputEntryTable" class="table table-striped">
+    <button onclick="reset();">
+        Reset Output
+      </button>
+<pre id="json"></pre>
+  
+</table>
+
+<script>
+    function readTextjobIDsFile(file)
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    var lines = allText.split('\n');
+                    $('#OutputEntryTable').empty()
+                    $('#OutputEntryTable').append(`
+                        <tr class="table-info">
+                        <td>Jobs UUID</td> 
+                        <td>Jobs Status</td>
+                        </tr>
+                        
+                        `)
+                    for(var line = 0; line < lines.length; line++){
+                        console.log((lines[line]).length)
+                        if (lines[line].length>1)
+                        $('#OutputEntryTable tr:last').after(
+                            `<tr id="row_`+ lines[line]+`">
+                                <td style="width: 22" >`+lines[line]+`</td>
+                                <td class="table-warning" style="width: 15" id="status_`+ lines[line].trim()+`" >Created</td>
+                            </tr>`)
+                    }
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+    function readTextjobstatusFile(file)
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    var lines = allText.split('\n');
+                    for(var line = 0; line < lines.length; line++){
+                        $('#status_'+ lines[line].trim()).removeClass()
+                        $('#status_'+ lines[line].trim()).addClass("table-success")
+                        $('#status_'+ lines[line].trim()).text("Compeleted")
+                    }
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+    function readJsonFile(file)
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    document.getElementById("json").textContent = JSON.stringify(JSON.parse(allText), undefined, 2);
+
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+
+
+    function refresh(){
+        readJsonFile("{{ url_for('static', filename='body.txt') }}");
+        // readTextjobIDsFile("{{ url_for('static', filename='body.txt') }}");
+        //readTextjobstatusFile("{{ url_for('static', filename='status.txt') }}");
+    }
+   var interval = setInterval(refresh, 2000);
+
+function reset(){
+    var requestOptions = {
+  method: 'GET',
+  redirect: 'follow'
+};
+
+fetch("/reset", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+}
+
+</script>
+{% endblock %}
