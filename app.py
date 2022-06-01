@@ -45,6 +45,20 @@ def reset_get_request():
     print(json.dumps(request.json))
     return json.dumps(request.json)
 
+@app.route('/test', methods=['POST'])
+def callbackCreate():
+    import requests
+    url = "https://gl-web-04.iesve.com/iCIM-QA06/cim/action/callback/ae0e0b4e-2c91-44b0-9fae-fdd0d811494a"
+    payload = json.dumps({"test": 1})
+    headers = {'Content-Type': 'application/json'}
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+        print(response.status_code)
+        return response.text,200
+    except Exception as e:
+        print(e)
+        return str(e),500
+    
 
 if __name__ == '__main__':
     HOST = os.environ.get('SERVER_HOST', 'localhost')
