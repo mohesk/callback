@@ -46,7 +46,7 @@ def reset_get_request():
     return json.dumps(request.json)
 
 @app.route('/test', methods=['POST'])
-def callbackCreate():
+def test():
     import requests
     url = "https://gl-web-04.iesve.com/iCIM-QA06/cim/action/callback/ae0e0b4e-2c91-44b0-9fae-fdd0d811494a"
     payload = json.dumps({"test": 1})
